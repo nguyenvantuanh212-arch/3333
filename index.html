@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VTA to DLD - 8/3</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      position: relative;
+      background: linear-gradient(to bottom, #7ec8ff 0%, #aee0ff 45%, #d8f2ff 66%, #8fd36d 66%, #78c45a 100%);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .scene {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .sky {
+      position: absolute;
+      inset: 0 0 34% 0;
+      background: linear-gradient(to bottom, #74c7ff 0%, #b6e7ff 70%, #def6ff 100%);
+      z-index: 1;
+    }
+
+    .field {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 34%;
+      background:
+        linear-gradient(to top, rgba(71, 135, 46, 0.35), rgba(71, 135, 46, 0) 35%),
+        linear-gradient(to bottom, #91d76b 0%, #7bcb58 55%, #68b346 100%);
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .field::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 10% 80%, rgba(255,255,255,0.15) 0 2px, transparent 3px),
+        radial-gradient(circle at 20% 88%, rgba(255,255,255,0.12) 0 2px, transparent 3px),
+        radial-gradient(circle at 34% 82%, rgba(255,255,255,0.15) 0 2px, transparent 3px),
+        radial-gradient(circle at 49% 90%, rgba(255,255,255,0.10) 0 2px, transparent 3px),
+        radial-gradient(circle at 63% 84%, rgba(255,255,255,0.14) 0 2px, transparent 3px),
+        radial-gradient(circle at 76% 86%, rgba(255,255,255,0.14) 0 2px, transparent 3px),
+        radial-gradient(circle at 90% 80%, rgba(255,255,255,0.15) 0 2px, transparent 3px);
+      pointer-events: none;
+    }
+
+    .sun {
+      position: absolute;
+      top: 8%;
+      right: 8%;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fffde7 0%, #fff59d 45%, #ffd54f 75%, rgba(255, 213, 79, 0.1) 100%);
+      box-shadow: 0 0 30px rgba(255, 223, 102, 0.7), 0 0 60px rgba(255, 223, 102, 0.35);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .cloud {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 999px;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.08));
+      opacity: 0.96;
+      z-index: 3;
+      animation-name: drift;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      pointer-events: none;
+    }
+
+    .cloud::before,
+    .cloud::after {
+      content: "";
+      position: absolute;
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 50%;
+    }
+
+    .cloud::before {
+      width: 45%;
+      height: 90%;
+      left: 12%;
+      top: -42%;
+    }
+
+    .cloud::after {
+      width: 35%;
+      height: 75%;
+      right: 15%;
+      top: -30%;
+    }
+
+    @keyframes drift {
+      from {
+        transform: translateX(-25vw);
+      }
+      to {
+        transform: translateX(130vw);
+      }
+    }
+
+    .content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .card {
+      max-width: 760px;
+      width: min(92vw, 760px);
+      padding: 28px 24px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #b44a79;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 1.2;
+      color: #c93972;
+      text-shadow: 0 2px 10px rgba(255,255,255,0.45);
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      line-height: 1.7;
+      color: #3d4a54;
+    }
+
+    .hint {
+      position: absolute;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      z-index: 12;
+      background: rgba(255,255,255,0.72);
+      color: #2f4858;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+      text-align: center;
+      max-width: calc(100vw - 24px);
+    }
+
+    .music-note {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      z-index: 12;
+      background: rgba(255,255,255,0.76);
+      color: #c93972;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.95rem;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+    }
+
+    .butterfly,
+    .seed {
+      position: absolute;
+      pointer-events: none;
+      z-index: 8;
+      will-change: transform, opacity;
+    }
+
+    .butterfly {
+      width: 26px;
+      height: 20px;
+    }
+
+    .butterfly .wing {
+      position: absolute;
+      width: 14px;
+      height: 18px;
+      border-radius: 14px 14px 10px 10px;
+      animation: flap 0.22s ease-in-out infinite alternate;
+      transform-origin: center right;
+      opacity: 0.95;
+    }
+
+    .butterfly .wing.left {
+      left: 0;
+      top: 0;
+      transform-origin: right center;
+      border-radius: 14px 10px 12px 10px;
+    }
+
+    .butterfly .wing.right {
+      right: 0;
+      top: 0;
+      transform-origin: left center;
+      border-radius: 10px 14px 10px 12px;
+    }
+
+    .butterfly .body {
+      position: absolute;
+      left: 50%;
+      top: 2px;
+      width: 4px;
+      height: 16px;
+      background: #3d2a1f;
+      border-radius: 999px;
+      transform: translateX(-50%);
+    }
+
+    .butterfly .body::before,
+    .butterfly .body::after {
+      content: "";
+      position: absolute;
+      top: -4px;
+      width: 1.5px;
+      height: 7px;
+      background: #3d2a1f;
+      border-radius: 999px;
+    }
+
+    .butterfly .body::before {
+      left: -2px;
+      transform: rotate(-28deg);
+    }
+
+    .butterfly .body::after {
+      right: -2px;
+      transform: rotate(28deg);
+    }
+
+    @keyframes flap {
+      from { transform: rotateY(0deg) scaleY(1); }
+      to   { transform: rotateY(70deg) scaleY(0.92); }
+    }
+
+    .seed {
+      font-size: 24px;
+      line-height: 1;
+      color: rgba(255,255,255,0.98);
+      text-shadow: 0 2px 6px rgba(0,0,0,0.14);
+      animation: spin 2.8s linear infinite;
+    }
+
+    @keyframes spin {
+      from { rotate: 0deg; }
+      to   { rotate: 360deg; }
+    }
+
+    .dandelion {
+      position: absolute;
+      bottom: 0;
+      width: 54px;
+      height: 130px;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .dandelion .stem {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 3px;
+      height: 98px;
+      transform: translateX(-50%);
+      background: linear-gradient(to bottom, #4d8b32, #6fb54a);
+      border-radius: 999px;
+    }
+
+    .dandelion .flower {
+      position: absolute;
+      left: 50%;
+      top: 8px;
+      width: 30px;
+      height: 30px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, rgba(255,255,255,1) 0 20%, rgba(255,255,255,0.95) 21% 40%, rgba(255,255,255,0.82) 41% 55%, rgba(255,255,255,0.0) 56%),
+        radial-gradient(circle, rgba(255,255,255,0.95) 0 1px, transparent 2px);
+      box-shadow: 0 0 10px rgba(255,255,255,0.75);
+    }
+
+    .dandelion .flower::before {
+      content: "";
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      background:
+        repeating-conic-gradient(from 0deg, rgba(255,255,255,0.95) 0 5deg, transparent 5deg 14deg);
+      opacity: 0.9;
+      mask: radial-gradient(circle, transparent 0 37%, #000 42% 70%, transparent 74%);
+      -webkit-mask: radial-gradient(circle, transparent 0 37%, #000 42% 70%, transparent 74%);
+    }
+
+    @media (max-width: 700px) {
+      .card {
+        padding: 22px 18px;
+        border-radius: 22px;
+      }
+
+      .hint {
+        font-size: 0.82rem;
+        bottom: 12px;
+      }
+
+      .music-note {
+        font-size: 0.82rem;
+        top: 12px;
+        left: 12px;
+      }
+
+      .sun {
+        width: 72px;
+        height: 72px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="scene" id="scene">
+    <div class="sky" id="sky"></div>
+    <div class="sun"></div>
+    <div class="field" id="field"></div>
+
+    <div class="content">
+      <div class="card">
+        <p class="eyebrow">VTA to DLD</p>
+        <h1>Chúc mừng ngày mùng 8 tháng 3</h1>
+        <p class="subtitle">
+          Một bầu trời dịu dàng, một cánh đồng hoa và những điều đẹp đẽ dành riêng cho bạn.
+        </p>
+      </div>
+    </div>
+
+    <div class="music-note" id="musicStatus">🎵 Đang cố tự bật nhạc...</div>
+    <div class="hint">Chạm/click vào bầu trời để thả bướm • Chạm/click vào cánh đồng để hoa bồ công anh bay lên</div>
+  </div>
+
+  <audio id="bgMusic" autoplay loop playsinline preload="auto">
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const scene = document.getElementById("scene");
+    const sky = document.getElementById("sky");
+    const field = document.getElementById("field");
+    const bgMusic = document.getElementById("bgMusic");
+    const musicStatus = document.getElementById("musicStatus");
+
+    function createCloud({ top, width, height, duration, delay, opacity }) {
+      const cloud = document.createElement("div");
+      cloud.className = "cloud";
+      cloud.style.top = top + "%";
+      cloud.style.width = width + "px";
+      cloud.style.height = height + "px";
+      cloud.style.animationDuration = duration + "s";
+      cloud.style.animationDelay = delay + "s";
+      cloud.style.opacity = opacity;
+      scene.appendChild(cloud);
+    }
+
+    createCloud({ top: 10, width: 150, height: 48, duration: 58, delay: -10, opacity: 0.92 });
+    createCloud({ top: 20, width: 180, height: 56, duration: 74, delay: -25, opacity: 0.95 });
+    createCloud({ top: 30, width: 120, height: 40, duration: 66, delay: -40, opacity: 0.9 });
+    createCloud({ top: 14, width: 210, height: 62, duration: 88, delay: -55, opacity: 0.96 });
+    createCloud({ top: 38, width: 170, height: 52, duration: 92, delay: -18, opacity: 0.88 });
+
+    function createDandelion(leftPercent, scale = 1) {
+      const d = document.createElement("div");
+      d.className = "dandelion";
+      d.style.left = leftPercent + "%";
+      d.style.transform = `translateX(-50%) scale(${scale})`;
+
+      const stem = document.createElement("div");
+      stem.className = "stem";
+      const flower = document.createElement("div");
+      flower.className = "flower";
+
+      d.appendChild(stem);
+      d.appendChild(flower);
+      field.appendChild(d);
+    }
+
+    [5, 11, 18, 26, 33, 41, 49, 58, 67, 75, 83, 91, 97].forEach((p, i) => {
+      createDandelion(p, 0.78 + (i % 4) * 0.12);
+    });
+
+    async function tryAutoplay() {
+      try {
+        bgMusic.volume = 1.0;
+        await bgMusic.play();
+        musicStatus.textContent = "🎵 Nhạc đang phát";
+      } catch (err) {
+        musicStatus.textContent = "🎵 Trình duyệt chặn autoplay có tiếng • click 1 lần để phát nhạc";
+      }
+    }
+
+    function resumeMusicOnFirstInteraction() {
+      const start = async () => {
+        try {
+          await bgMusic.play();
+          musicStatus.textContent = "🎵 Nhạc đang phát";
+        } catch (err) {
+          musicStatus.textContent = "🎵 Không thể tự phát nhạc trên trình duyệt này";
+        }
+        window.removeEventListener("pointerdown", start);
+        window.removeEventListener("touchstart", start);
+        window.removeEventListener("click", start);
+      };
+
+      window.addEventListener("pointerdown", start, { once: true });
+      window.addEventListener("touchstart", start, { once: true });
+      window.addEventListener("click", start, { once: true });
+    }
+
+    function randomButterflyColors() {
+      const palettes = [
+        ["#ff77aa", "#ffb3cc"],
+        ["#7b68ee", "#b8a9ff"],
+        ["#ff9f43", "#ffd166"],
+        ["#4ecdc4", "#b8fff1"],
+        ["#ff6b6b", "#ffd1d1"],
+        ["#8bc34a", "#d9ffb3"]
+      ];
+      return palettes[Math.floor(Math.random() * palettes.length)];
+    }
+
+    function spawnButterflies(x, y) {
+      const count = 5 + Math.floor(Math.random() * 4);
+
+      for (let i = 0; i < count; i++) {
+        const butterfly = document.createElement("div");
+        butterfly.className = "butterfly";
+
+        const leftWing = document.createElement("div");
+        leftWing.className = "wing left";
+        const rightWing = document.createElement("div");
+        rightWing.className = "wing right";
+        const body = document.createElement("div");
+        body.className = "body";
+
+        const [c1, c2] = randomButterflyColors();
+        leftWing.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
+        rightWing.style.background = `linear-gradient(225deg, ${c1}, ${c2})`;
+
+        butterfly.appendChild(leftWing);
+        butterfly.appendChild(rightWing);
+        butterfly.appendChild(body);
+
+        butterfly.style.left = x + "px";
+        butterfly.style.top = y + "px";
+        scene.appendChild(butterfly);
+
+        const dx = (Math.random() - 0.5) * 260 + (Math.random() > 0.5 ? 120 : -120);
+        const dy = -(120 + Math.random() * 180);
+        const spin = (Math.random() - 0.5) * 120;
+        const duration = 2600 + Math.random() * 1800;
+        const driftX = (Math.random() - 0.5) * 90;
+
+        const startX = x;
+        const startY = y;
+        const startTime = performance.now();
+
+        function animateButterfly(now) {
+          const t = Math.min((now - startTime) / duration, 1);
+          const ease = 1 - Math.pow(1 - t, 3);
+          const currentX = startX + dx * ease + Math.sin(t * 10 + i) * driftX;
+          const currentY = startY + dy * ease + Math.sin(t * 16 + i) * 18;
+          const opacity = 1 - t * 0.85;
+
+          butterfly.style.transform = `translate(${currentX - startX}px, ${currentY - startY}px) rotate(${spin * ease}deg) scale(${1 - t * 0.2})`;
+          butterfly.style.opacity = opacity;
+
+          if (t < 1) {
+            requestAnimationFrame(animateButterfly);
+          } else {
+            butterfly.remove();
+          }
+        }
+
+        requestAnimationFrame(animateButterfly);
+      }
+    }
+
+    function spawnSeeds(x, y) {
+      const count = 9 + Math.floor(Math.random() * 7);
+
+      for (let i = 0; i < count; i++) {
+        const seed = document.createElement("div");
+        seed.className = "seed";
+        seed.textContent = "✺";
+        seed.style.left = x + "px";
+        seed.style.top = y + "px";
+        scene.appendChild(seed);
+
+        const dx = (Math.random() - 0.5) * 260;
+        const dy = -(130 + Math.random() * 260);
+        const sway = 30 + Math.random() * 50;
+        const duration = 2600 + Math.random() * 2600;
+        const scale = 0.7 + Math.random() * 0.9;
+        const startX = x;
+        const startY = y;
+        const startTime = performance.now();
+        const phase = Math.random() * Math.PI * 2;
+
+        function animateSeed(now) {
+          const t = Math.min((now - startTime) / duration, 1);
+          const ease = 1 - Math.pow(1 - t, 2.2);
+          const currentX = startX + dx * ease + Math.sin(t * 8 + phase) * sway;
+          const currentY = startY + dy * ease;
+          const opacity = 1 - t;
+          const currentScale = scale * (1 - t * 0.22);
+
+          seed.style.transform = `translate(${currentX - startX}px, ${currentY - startY}px) scale(${currentScale})`;
+          seed.style.opacity = opacity;
+
+          if (t < 1) {
+            requestAnimationFrame(animateSeed);
+          } else {
+            seed.remove();
+          }
+        }
+
+        requestAnimationFrame(animateSeed);
+      }
+    }
+
+    scene.addEventListener("click", (e) => {
+      const rect = scene.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      if (y > rect.height * 0.66) {
+        spawnSeeds(x, y);
+      } else {
+        spawnButterflies(x, y);
+      }
+    });
+
+    window.addEventListener("load", () => {
+      tryAutoplay();
+      resumeMusicOnFirstInteraction();
+    });
+  </script>
+</body>
+</html>
