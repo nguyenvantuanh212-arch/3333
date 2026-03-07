@@ -72,13 +72,26 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(circle at 10% 80%, rgba(255,255,255,0.15) 0 2px, transparent 3px),
-        radial-gradient(circle at 20% 88%, rgba(255,255,255,0.12) 0 2px, transparent 3px),
-        radial-gradient(circle at 34% 82%, rgba(255,255,255,0.15) 0 2px, transparent 3px),
-        radial-gradient(circle at 49% 90%, rgba(255,255,255,0.10) 0 2px, transparent 3px),
-        radial-gradient(circle at 63% 84%, rgba(255,255,255,0.14) 0 2px, transparent 3px),
-        radial-gradient(circle at 76% 86%, rgba(255,255,255,0.14) 0 2px, transparent 3px),
-        radial-gradient(circle at 90% 80%, rgba(255,255,255,0.15) 0 2px, transparent 3px);
+        radial-gradient(circle at 3% 84%, rgba(255,255,255,0.14) 0 2px, transparent 3px),
+        radial-gradient(circle at 8% 88%, rgba(255,255,255,0.12) 0 2px, transparent 3px),
+        radial-gradient(circle at 12% 82%, rgba(255,255,255,0.15) 0 2px, transparent 3px),
+        radial-gradient(circle at 17% 90%, rgba(255,255,255,0.11) 0 2px, transparent 3px),
+        radial-gradient(circle at 21% 83%, rgba(255,255,255,0.14) 0 2px, transparent 3px),
+        radial-gradient(circle at 26% 87%, rgba(255,255,255,0.13) 0 2px, transparent 3px),
+        radial-gradient(circle at 31% 81%, rgba(255,255,255,0.15) 0 2px, transparent 3px),
+        radial-gradient(circle at 36% 89%, rgba(255,255,255,0.11) 0 2px, transparent 3px),
+        radial-gradient(circle at 41% 84%, rgba(255,255,255,0.13) 0 2px, transparent 3px),
+        radial-gradient(circle at 46% 91%, rgba(255,255,255,0.11) 0 2px, transparent 3px),
+        radial-gradient(circle at 52% 82%, rgba(255,255,255,0.14) 0 2px, transparent 3px),
+        radial-gradient(circle at 57% 88%, rgba(255,255,255,0.12) 0 2px, transparent 3px),
+        radial-gradient(circle at 62% 84%, rgba(255,255,255,0.14) 0 2px, transparent 3px),
+        radial-gradient(circle at 67% 90%, rgba(255,255,255,0.10) 0 2px, transparent 3px),
+        radial-gradient(circle at 72% 83%, rgba(255,255,255,0.14) 0 2px, transparent 3px),
+        radial-gradient(circle at 77% 87%, rgba(255,255,255,0.13) 0 2px, transparent 3px),
+        radial-gradient(circle at 82% 82%, rgba(255,255,255,0.15) 0 2px, transparent 3px),
+        radial-gradient(circle at 87% 89%, rgba(255,255,255,0.11) 0 2px, transparent 3px),
+        radial-gradient(circle at 92% 84%, rgba(255,255,255,0.14) 0 2px, transparent 3px),
+        radial-gradient(circle at 97% 88%, rgba(255,255,255,0.13) 0 2px, transparent 3px);
       pointer-events: none;
     }
 
@@ -137,8 +150,12 @@
     }
 
     @keyframes drift {
-      from { transform: translateX(-25vw); }
-      to { transform: translateX(130vw); }
+      from {
+        transform: translateX(0);
+      }
+      to {
+        transform: translateX(155vw);
+      }
     }
 
     .content {
@@ -186,7 +203,7 @@
       line-height: 1.2;
       color: #c93972;
       text-shadow: 0 2px 10px rgba(255,255,255,0.45);
-      transition: text-shadow 1s ease, transform 1s ease, color 1s ease;
+      transition: text-shadow 1s ease, transform 1s ease, color 1s ease, opacity 0.8s ease;
     }
 
     .scene.wish-mode h1 {
@@ -203,6 +220,7 @@
       font-size: clamp(1rem, 2vw, 1.2rem);
       line-height: 1.7;
       color: #3d4a54;
+      transition: opacity 0.8s ease;
     }
 
     .hint {
@@ -483,8 +501,8 @@
     <div class="content">
       <div class="card">
         <p class="eyebrow">VTA to DLD</p>
-        <h1>Chúc mừng ngày mùng 8 tháng 3</h1>
-        <p class="subtitle">
+        <h1 id="mainTitle">Chúc mừng ngày mùng 8 tháng 3</h1>
+        <p class="subtitle" id="mainSubtitle">
           Một bầu trời dịu dàng, một cánh đồng hoa và những điều đẹp đẽ dành riêng cho bạn.
         </p>
       </div>
@@ -505,12 +523,15 @@
     const field = document.getElementById("field");
     const bgMusic = document.getElementById("bgMusic");
     const musicStatus = document.getElementById("musicStatus");
+    const mainTitle = document.getElementById("mainTitle");
+    const mainSubtitle = document.getElementById("mainSubtitle");
 
     let holdTimer = null;
     let holdTriggered = false;
     let isPointerDown = false;
     let lastTrailTime = 0;
     let wishCooldown = false;
+    let titleChangedForever = false;
 
     const popMessages = [
       "Dịu dàng như mây trắng",
@@ -522,10 +543,11 @@
       "Chúc bạn luôn được yêu thương"
     ];
 
-    function createCloud({ top, width, height, duration, delay, opacity }) {
+    function createCloud({ top, left, width, height, duration, delay, opacity }) {
       const cloud = document.createElement("div");
       cloud.className = "cloud";
       cloud.style.top = top + "%";
+      cloud.style.left = left + "vw";
       cloud.style.width = width + "px";
       cloud.style.height = height + "px";
       cloud.style.animationDuration = duration + "s";
@@ -534,16 +556,28 @@
       scene.appendChild(cloud);
     }
 
-    createCloud({ top: 10, width: 150, height: 48, duration: 58, delay: -10, opacity: 0.92 });
-    createCloud({ top: 20, width: 180, height: 56, duration: 74, delay: -25, opacity: 0.95 });
-    createCloud({ top: 30, width: 120, height: 40, duration: 66, delay: -40, opacity: 0.9 });
-    createCloud({ top: 14, width: 210, height: 62, duration: 88, delay: -55, opacity: 0.96 });
-    createCloud({ top: 38, width: 170, height: 52, duration: 92, delay: -18, opacity: 0.88 });
+    const cloudConfigs = [
+      { top: 6,  left: -18, width: 110, height: 34, duration: 52,  delay: -8,  opacity: 0.84 },
+      { top: 9,  left: -28, width: 165, height: 50, duration: 78,  delay: -21, opacity: 0.92 },
+      { top: 12, left: -35, width: 240, height: 70, duration: 110, delay: -47, opacity: 0.95 },
+      { top: 15, left: -12, width: 135, height: 42, duration: 60,  delay: -16, opacity: 0.88 },
+      { top: 18, left: -32, width: 200, height: 58, duration: 96,  delay: -39, opacity: 0.93 },
+      { top: 22, left: -24, width: 95,  height: 30, duration: 48,  delay: -12, opacity: 0.80 },
+      { top: 24, left: -40, width: 170, height: 54, duration: 84,  delay: -57, opacity: 0.90 },
+      { top: 28, left: -10, width: 260, height: 74, duration: 124, delay: -73, opacity: 0.94 },
+      { top: 31, left: -36, width: 145, height: 44, duration: 68,  delay: -25, opacity: 0.86 },
+      { top: 34, left: -20, width: 185, height: 56, duration: 90,  delay: -50, opacity: 0.91 },
+      { top: 37, left: -30, width: 120, height: 36, duration: 58,  delay: -33, opacity: 0.83 },
+      { top: 40, left: -14, width: 220, height: 64, duration: 118, delay: -64, opacity: 0.92 }
+    ];
 
-    function createDandelion(leftPercent, scale = 1) {
+    cloudConfigs.forEach(createCloud);
+
+    function createDandelion(leftPercent, bottomPx = 0, scale = 1) {
       const d = document.createElement("div");
       d.className = "dandelion";
       d.style.left = leftPercent + "%";
+      d.style.bottom = bottomPx + "px";
       d.style.transform = `translateX(-50%) scale(${scale})`;
 
       const stem = document.createElement("div");
@@ -556,9 +590,27 @@
       field.appendChild(d);
     }
 
-    [5, 11, 18, 26, 33, 41, 49, 58, 67, 75, 83, 91, 97].forEach((p, i) => {
-      createDandelion(p, 0.78 + (i % 4) * 0.12);
-    });
+    function createDenseDandelionField() {
+      const rows = [
+        { count: 34, bottomMin: -8, bottomMax: 8,  scaleMin: 0.55, scaleMax: 0.72 },
+        { count: 28, bottomMin: 8,  bottomMax: 20, scaleMin: 0.72, scaleMax: 0.88 },
+        { count: 22, bottomMin: 18, bottomMax: 34, scaleMin: 0.88, scaleMax: 1.05 },
+        { count: 16, bottomMin: 28, bottomMax: 48, scaleMin: 1.00, scaleMax: 1.20 }
+      ];
+
+      rows.forEach((row) => {
+        for (let i = 0; i < row.count; i++) {
+          const base = (i + 0.5) * (100 / row.count);
+          const jitter = (Math.random() - 0.5) * (100 / row.count) * 0.65;
+          const left = Math.max(1, Math.min(99, base + jitter));
+          const bottom = row.bottomMin + Math.random() * (row.bottomMax - row.bottomMin);
+          const scale = row.scaleMin + Math.random() * (row.scaleMax - row.scaleMin);
+          createDandelion(left, bottom, scale);
+        }
+      });
+    }
+
+    createDenseDandelionField();
 
     async function tryAutoplay() {
       try {
@@ -831,6 +883,21 @@
       requestAnimationFrame(animateTrail);
     }
 
+    function changeCenterMessageForever() {
+      if (titleChangedForever) return;
+      titleChangedForever = true;
+
+      mainTitle.style.opacity = "0";
+      mainSubtitle.style.opacity = "0";
+
+      setTimeout(() => {
+        mainTitle.textContent = "những điều tốt đẹp nhất sẽ luôn đến với em";
+        mainSubtitle.textContent = "VTA to DLD";
+        mainTitle.style.opacity = "1";
+        mainSubtitle.style.opacity = "1";
+      }, 450);
+    }
+
     function triggerWishMoment(x, y) {
       if (wishCooldown) return;
       wishCooldown = true;
@@ -854,6 +921,10 @@
           spawnSeeds(sx, sy, 12);
         }, i * 220);
       }
+
+      setTimeout(() => {
+        changeCenterMessageForever();
+      }, 1200);
 
       setTimeout(() => {
         scene.classList.remove("wish-mode");
