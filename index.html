@@ -30,6 +30,11 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
+      transition: filter 1.2s ease, transform 1.2s ease;
+    }
+
+    .scene.wish-mode {
+      filter: saturate(1.12) brightness(1.08);
     }
 
     .sky {
@@ -37,6 +42,11 @@
       inset: 0 0 34% 0;
       background: linear-gradient(to bottom, #74c7ff 0%, #b6e7ff 70%, #def6ff 100%);
       z-index: 1;
+      transition: background 1.2s ease;
+    }
+
+    .scene.wish-mode .sky {
+      background: linear-gradient(to bottom, #8fd4ff 0%, #ccefff 68%, #effbff 100%);
     }
 
     .field {
@@ -50,6 +60,11 @@
         linear-gradient(to bottom, #91d76b 0%, #7bcb58 55%, #68b346 100%);
       z-index: 2;
       overflow: hidden;
+      transition: filter 1.2s ease;
+    }
+
+    .scene.wish-mode .field {
+      filter: brightness(1.06) saturate(1.08);
     }
 
     .field::before {
@@ -78,6 +93,12 @@
       box-shadow: 0 0 30px rgba(255, 223, 102, 0.7), 0 0 60px rgba(255, 223, 102, 0.35);
       z-index: 2;
       pointer-events: none;
+      transition: transform 1.2s ease, box-shadow 1.2s ease;
+    }
+
+    .scene.wish-mode .sun {
+      transform: scale(1.08);
+      box-shadow: 0 0 40px rgba(255, 223, 102, 0.9), 0 0 90px rgba(255, 223, 102, 0.45);
     }
 
     .cloud {
@@ -116,12 +137,8 @@
     }
 
     @keyframes drift {
-      from {
-        transform: translateX(-25vw);
-      }
-      to {
-        transform: translateX(130vw);
-      }
+      from { transform: translateX(-25vw); }
+      to { transform: translateX(130vw); }
     }
 
     .content {
@@ -145,6 +162,13 @@
       box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
       text-align: center;
       pointer-events: none;
+      transition: transform 1s ease, box-shadow 1s ease, background 1s ease;
+    }
+
+    .scene.wish-mode .card {
+      transform: scale(1.03);
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow: 0 22px 55px rgba(255, 155, 190, 0.25);
     }
 
     .eyebrow {
@@ -162,6 +186,16 @@
       line-height: 1.2;
       color: #c93972;
       text-shadow: 0 2px 10px rgba(255,255,255,0.45);
+      transition: text-shadow 1s ease, transform 1s ease, color 1s ease;
+    }
+
+    .scene.wish-mode h1 {
+      color: #d63384;
+      text-shadow:
+        0 0 8px rgba(255,255,255,0.8),
+        0 0 18px rgba(255,182,215,0.9),
+        0 0 32px rgba(255,182,215,0.7);
+      transform: scale(1.02);
     }
 
     .subtitle {
@@ -204,17 +238,37 @@
       pointer-events: none;
     }
 
+    .hold-tip {
+      position: absolute;
+      right: 18px;
+      top: 18px;
+      z-index: 12;
+      background: rgba(255,255,255,0.76);
+      color: #7b4b5a;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.92rem;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+    }
+
     .butterfly,
-    .seed {
+    .seed,
+    .sparkle,
+    .trail-petal,
+    .trail-light,
+    .message-pop,
+    .heart-pop {
       position: absolute;
       pointer-events: none;
-      z-index: 8;
       will-change: transform, opacity;
     }
 
     .butterfly {
       width: 26px;
       height: 20px;
+      z-index: 8;
     }
 
     .butterfly .wing {
@@ -275,7 +329,7 @@
 
     @keyframes flap {
       from { transform: rotateY(0deg) scaleY(1); }
-      to   { transform: rotateY(70deg) scaleY(0.92); }
+      to { transform: rotateY(70deg) scaleY(0.92); }
     }
 
     .seed {
@@ -284,11 +338,58 @@
       color: rgba(255,255,255,0.98);
       text-shadow: 0 2px 6px rgba(0,0,0,0.14);
       animation: spin 2.8s linear infinite;
+      z-index: 8;
     }
 
     @keyframes spin {
       from { rotate: 0deg; }
-      to   { rotate: 360deg; }
+      to { rotate: 360deg; }
+    }
+
+    .sparkle {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,223,245,0.95) 45%, rgba(255,223,245,0) 75%);
+      z-index: 7;
+      box-shadow: 0 0 12px rgba(255,255,255,0.95);
+    }
+
+    .trail-petal {
+      width: 12px;
+      height: 12px;
+      border-radius: 70% 30% 70% 30%;
+      background: linear-gradient(135deg, #ffd0e6, #ff9fc8);
+      z-index: 7;
+      opacity: 0.88;
+    }
+
+    .trail-light {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.95);
+      z-index: 7;
+      box-shadow: 0 0 10px rgba(255,255,255,0.9);
+    }
+
+    .message-pop {
+      z-index: 11;
+      padding: 8px 14px;
+      background: rgba(255,255,255,0.82);
+      color: #c93972;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+      backdrop-filter: blur(8px);
+      white-space: nowrap;
+    }
+
+    .heart-pop {
+      font-size: 18px;
+      color: #ff6fa6;
+      z-index: 8;
+      text-shadow: 0 2px 8px rgba(255,255,255,0.7);
     }
 
     .dandelion {
@@ -348,15 +449,27 @@
         bottom: 12px;
       }
 
-      .music-note {
+      .music-note,
+      .hold-tip {
         font-size: 0.82rem;
         top: 12px;
+      }
+
+      .music-note {
         left: 12px;
+      }
+
+      .hold-tip {
+        right: 12px;
       }
 
       .sun {
         width: 72px;
         height: 72px;
+      }
+
+      .message-pop {
+        font-size: 0.85rem;
       }
     }
   </style>
@@ -378,7 +491,8 @@
     </div>
 
     <div class="music-note" id="musicStatus">🎵 Đang cố tự bật nhạc...</div>
-    <div class="hint">Chạm/click vào bầu trời để thả bướm • Chạm/click vào cánh đồng để hoa bồ công anh bay lên</div>
+    <div class="hold-tip">✨ Nhấn giữ để kích hoạt điều ước</div>
+    <div class="hint">Click trời: bướm • Click cánh đồng: bồ công anh • Rê chuột/vuốt: để lại vệt cánh hoa • Nhấn giữ: khoảnh khắc ước nguyện</div>
   </div>
 
   <audio id="bgMusic" autoplay loop playsinline preload="auto">
@@ -391,6 +505,22 @@
     const field = document.getElementById("field");
     const bgMusic = document.getElementById("bgMusic");
     const musicStatus = document.getElementById("musicStatus");
+
+    let holdTimer = null;
+    let holdTriggered = false;
+    let isPointerDown = false;
+    let lastTrailTime = 0;
+    let wishCooldown = false;
+
+    const popMessages = [
+      "Dịu dàng như mây trắng",
+      "Một ngày 8/3 thật rực rỡ",
+      "VTA gửi điều đẹp nhất đến DLD",
+      "Bình yên và hạnh phúc nhé",
+      "Luôn tỏa sáng theo cách riêng",
+      "Một chút ngọt ngào cho hôm nay",
+      "Chúc bạn luôn được yêu thương"
+    ];
 
     function createCloud({ top, width, height, duration, delay, opacity }) {
       const cloud = document.createElement("div");
@@ -470,8 +600,8 @@
       return palettes[Math.floor(Math.random() * palettes.length)];
     }
 
-    function spawnButterflies(x, y) {
-      const count = 5 + Math.floor(Math.random() * 4);
+    function spawnButterflies(x, y, countOverride = null) {
+      const count = countOverride ?? (5 + Math.floor(Math.random() * 4));
 
       for (let i = 0; i < count; i++) {
         const butterfly = document.createElement("div");
@@ -527,8 +657,8 @@
       }
     }
 
-    function spawnSeeds(x, y) {
-      const count = 9 + Math.floor(Math.random() * 7);
+    function spawnSeeds(x, y, countOverride = null) {
+      const count = countOverride ?? (9 + Math.floor(Math.random() * 7));
 
       for (let i = 0; i < count; i++) {
         const seed = document.createElement("div");
@@ -570,17 +700,247 @@
       }
     }
 
-    scene.addEventListener("click", (e) => {
+    function spawnSparkles(x, y, amount = 8) {
+      for (let i = 0; i < amount; i++) {
+        const s = document.createElement("div");
+        s.className = "sparkle";
+        s.style.left = x + "px";
+        s.style.top = y + "px";
+        scene.appendChild(s);
+
+        const dx = (Math.random() - 0.5) * 120;
+        const dy = (Math.random() - 0.5) * 120;
+        const duration = 700 + Math.random() * 700;
+        const start = performance.now();
+
+        function animate(now) {
+          const t = Math.min((now - start) / duration, 1);
+          const ease = 1 - Math.pow(1 - t, 2);
+          s.style.transform = `translate(${dx * ease}px, ${dy * ease}px) scale(${1 - t * 0.5})`;
+          s.style.opacity = 1 - t;
+
+          if (t < 1) {
+            requestAnimationFrame(animate);
+          } else {
+            s.remove();
+          }
+        }
+
+        requestAnimationFrame(animate);
+      }
+    }
+
+    function spawnHeartPop(x, y) {
+      const heart = document.createElement("div");
+      heart.className = "heart-pop";
+      heart.textContent = Math.random() > 0.5 ? "❤" : "💖";
+      heart.style.left = x + "px";
+      heart.style.top = y + "px";
+      scene.appendChild(heart);
+
+      const dx = (Math.random() - 0.5) * 50;
+      const dy = -80 - Math.random() * 50;
+      const duration = 1200;
+      const start = performance.now();
+
+      function animate(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - t, 2);
+        heart.style.transform = `translate(${dx * ease}px, ${dy * ease}px) scale(${1 + 0.3 * ease})`;
+        heart.style.opacity = 1 - t;
+
+        if (t < 1) requestAnimationFrame(animate);
+        else heart.remove();
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    function spawnMessagePop(x, y) {
+      const msg = document.createElement("div");
+      msg.className = "message-pop";
+      msg.textContent = popMessages[Math.floor(Math.random() * popMessages.length)];
+      msg.style.left = x + "px";
+      msg.style.top = y + "px";
+      scene.appendChild(msg);
+
+      const dx = (Math.random() - 0.5) * 50;
+      const dy = -90 - Math.random() * 40;
+      const duration = 1800;
+      const start = performance.now();
+
+      function animate(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - t, 2);
+        msg.style.transform = `translate(${dx * ease}px, ${dy * ease}px) scale(${1 + ease * 0.04})`;
+        msg.style.opacity = 1 - t;
+
+        if (t < 1) requestAnimationFrame(animate);
+        else msg.remove();
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    function clickSurprise(x, y) {
+      const r = Math.random();
+      if (r < 0.33) {
+        spawnMessagePop(x, y);
+      } else if (r < 0.66) {
+        spawnHeartPop(x, y);
+      } else {
+        spawnSparkles(x, y, 10);
+      }
+    }
+
+    function createTrailAt(x, y) {
+      const petal = document.createElement("div");
+      petal.className = "trail-petal";
+      petal.style.left = x + "px";
+      petal.style.top = y + "px";
+      petal.style.rotate = (Math.random() * 360) + "deg";
+      scene.appendChild(petal);
+
+      const light = document.createElement("div");
+      light.className = "trail-light";
+      light.style.left = (x + (Math.random() - 0.5) * 10) + "px";
+      light.style.top = (y + (Math.random() - 0.5) * 10) + "px";
+      scene.appendChild(light);
+
+      const duration = 900 + Math.random() * 500;
+      const dy = -20 - Math.random() * 20;
+      const dx = (Math.random() - 0.5) * 24;
+      const start = performance.now();
+
+      function animateTrail(now) {
+        const t = Math.min((now - start) / duration, 1);
+        petal.style.transform = `translate(${dx * t}px, ${dy * t}px) scale(${1 - t * 0.45}) rotate(${(1 - t) * 20}deg)`;
+        petal.style.opacity = 0.9 - t * 0.9;
+
+        light.style.transform = `translate(${dx * 0.5 * t}px, ${(dy - 8) * t}px) scale(${1 - t * 0.4})`;
+        light.style.opacity = 0.95 - t * 0.95;
+
+        if (t < 1) {
+          requestAnimationFrame(animateTrail);
+        } else {
+          petal.remove();
+          light.remove();
+        }
+      }
+
+      requestAnimationFrame(animateTrail);
+    }
+
+    function triggerWishMoment(x, y) {
+      if (wishCooldown) return;
+      wishCooldown = true;
+      scene.classList.add("wish-mode");
+
+      spawnSparkles(x, y, 26);
+      spawnMessagePop(x, y);
+      spawnHeartPop(x + 20, y - 10);
+
+      for (let i = 0; i < 4; i++) {
+        setTimeout(() => {
+          spawnButterflies(x + (Math.random() - 0.5) * 120, y - 60 - Math.random() * 40, 6);
+        }, i * 180);
+      }
+
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          const rect = scene.getBoundingClientRect();
+          const sx = rect.width * (0.15 + Math.random() * 0.7);
+          const sy = rect.height * (0.72 + Math.random() * 0.18);
+          spawnSeeds(sx, sy, 12);
+        }, i * 220);
+      }
+
+      setTimeout(() => {
+        scene.classList.remove("wish-mode");
+      }, 4200);
+
+      setTimeout(() => {
+        wishCooldown = false;
+      }, 5200);
+    }
+
+    function getXYFromEvent(e) {
       const rect = scene.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      let clientX, clientY;
+
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else if (e.changedTouches && e.changedTouches.length > 0) {
+        clientX = e.changedTouches[0].clientX;
+        clientY = e.changedTouches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top,
+        rect
+      };
+    }
+
+    scene.addEventListener("click", (e) => {
+      if (holdTriggered) {
+        holdTriggered = false;
+        return;
+      }
+
+      const { x, y, rect } = getXYFromEvent(e);
 
       if (y > rect.height * 0.66) {
         spawnSeeds(x, y);
       } else {
         spawnButterflies(x, y);
       }
+
+      clickSurprise(x, y);
     });
+
+    function onPointerStart(e) {
+      isPointerDown = true;
+      holdTriggered = false;
+      clearTimeout(holdTimer);
+
+      const { x, y } = getXYFromEvent(e);
+      holdTimer = setTimeout(() => {
+        holdTriggered = true;
+        triggerWishMoment(x, y);
+      }, 1200);
+    }
+
+    function onPointerEnd() {
+      isPointerDown = false;
+      clearTimeout(holdTimer);
+    }
+
+    function onPointerMove(e) {
+      const now = Date.now();
+      if (now - lastTrailTime < 35) return;
+      lastTrailTime = now;
+
+      const { x, y } = getXYFromEvent(e);
+
+      if (isPointerDown || e.type === "mousemove" || e.type === "touchmove") {
+        createTrailAt(x, y);
+      }
+    }
+
+    scene.addEventListener("mousedown", onPointerStart);
+    scene.addEventListener("touchstart", onPointerStart, { passive: true });
+    scene.addEventListener("mouseup", onPointerEnd);
+    scene.addEventListener("mouseleave", onPointerEnd);
+    scene.addEventListener("touchend", onPointerEnd);
+    scene.addEventListener("touchcancel", onPointerEnd);
+
+    scene.addEventListener("mousemove", onPointerMove);
+    scene.addEventListener("touchmove", onPointerMove, { passive: true });
 
     window.addEventListener("load", () => {
       tryAutoplay();
